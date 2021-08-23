@@ -3,9 +3,26 @@
   <groupId>api</groupId>
   <artifactId>api</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+   <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>9.2.1.jre11</version>
+   </dependency>
+
+ 
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20160810</version>
+</dependency>
+  
+</dependencies>
   <packaging>war</packaging>
   <build>
     <sourceDirectory>src</sourceDirectory>
+    
+
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
