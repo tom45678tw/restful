@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+
 @WebServlet("/employees/*")
 public class Server extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -170,10 +172,10 @@ public class Server extends HttpServlet {
 		if (conn != null) {
 			try {
 				// 啟用Employees資料表之識別欄位手動新增功能
-				String sql = "set identity_insert employees on;";
+				String sql = "set identity_insert employees on insert into employees(employeeid,firstname,lastname,title,birthdate,hiredate,address,city) values(?,?,?,?,?,?,?,?)";
 				// 新增一筆員工資料列
-				sql += "insert into employees(employeeid,firstname,lastname,title,birthdate,hiredate,address,city) "
-						+ "values(?,?,?,?,?,?,?,?)";
+//				sql += "insert into employees(employeeid,firstname,lastname,title,birthdate,hiredate,address,city) "
+//						+ "values(?,?,?,?,?,?,?,?)";
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, employeeid);
 				pstmt.setString(2, firstname);
@@ -314,9 +316,10 @@ public class Server extends HttpServlet {
 
 	private DataSource getDataSource() {
 		DataSource ds = null;
+
 		try {
-			InitialContext ic = new InitialContext();
-			Context context = (Context) ic.lookup("java:comp/env");
+			InitialContext ic = new InitialContext();                
+			Context context = (Context) ic.lookup("java:comp/env");//java:come(根目錄)/env(資源 裡面有定義了JDBC)  得到了context環境
 			ds = (DataSource) context.lookup("jdbc/northwind");
 		} catch (NamingException e) {
 			e.printStackTrace();
