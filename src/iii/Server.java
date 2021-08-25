@@ -108,7 +108,31 @@ public class Server extends HttpServlet {
 		}
 		out.print(responseText);
 	}
+  //刪除
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		response.setContentType("application/json;charset=utf-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		PrintWriter out = response.getWriter();
 
+		String responseText = "{ \"delete-status\": \"fail\" }";
+		String empid = request.getPathInfo();
+			// 1. 假設用戶端發出請求之網址為 http://localhost:8080/api/employees/3
+			//    則 request.getContextPath()=>/api request.getServletPath()=>/employees requets.getPathInfo()=>/3
+			// 2. 假設用戶端發出請求之網址為 http://localhost:8080/api/employees/
+			//    則 request.getContextPath()=>/api request.getServletPath()=>/employees requets.getPathInfo()=>/
+			// 3. 假設用戶端發出請求之網址為 http://localhost:8080/api/employees
+			//    則 request.getContextPath()=>/api request.getServletPath()=>/employees requets.getPathInfo()=>null
+		if (empid != null) {			
+			// 將empid的字串內容去除'/'字元
+			empid = empid.replace("/", "");			
+			if (empid.matches("\\d+")) {// 當empid為一個數目，例如:"3"
+				
+				responseText = deleteEmp(empid);
+			}
+		}
+		out.print(responseText);
+	}
 	//	Google Chrome在用戶端發送具特殊HTTP方法(即GET、POST、 HEAD以外的方法，例如PUT方法)的跨來源的請求時，會進行下列的特殊處理：
 	//	1.	先送出一個HTTP方法為OPTIONS的請求(即預檢請求/Preflight Requset)給這個跨來源的伺服端。
 	//	2.	等候並接收到伺服端的回應訊息後，檢視其內的「Access-Control-Allow-Methods」的標頭值，以確定這個跨來源的伺服端是否支援這個特殊的HTTP方法？若是，方正式送出該請求。
@@ -231,6 +255,30 @@ public class Server extends HttpServlet {
 		}
 		return returnText;
 	}
+	
+	private String deleteEmp(String empid) {
+		String returnText = "{ \"delete-status\": \"fail\" }";
+		Connection conn = getConnection();
+		if (conn != null) {
+			try {
+				String sql = "delete from employees where employeeid=?";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, empid);
+				
+				pstmt.executeUpdate();
+				returnText = "{ \"delete-status\": \"success\" }";
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return returnText;
+	}
 
 	private String resultSetToJsonObject(ResultSet rs) {
 		String returnText = "null";
@@ -260,7 +308,7 @@ public class Server extends HttpServlet {
 		} catch (SQLException | JSONException e) {
 			e.printStackTrace();
 		}
-
+             System.out.println("hello");
 		return returnText;
 	}
 
